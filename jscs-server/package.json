@@ -15,7 +15,7 @@
 		"typescript": "^1.6.2"
 	},
 	"scripts": {
-		"compile": "copyfiles ./package.json ../eslint/bin/server && npm install --production --prefix ../eslint/bin/server && tsc -p ./src",
-		"watch": "copyfiles ./package.json ../eslint/bin/server && npm install --production --prefix ../eslint/bin/server && tsc --watch -p ./src"
+		"compile": "installServerIntoExtension ../jscs ./package.json ./src/tsconfig.json && tsc -p ./src",
+		"watch": "installServerIntoExtension ../jscs ./package.json ./src/tsconfig.json && tsc --watch -p ./src"
 	}
 }
