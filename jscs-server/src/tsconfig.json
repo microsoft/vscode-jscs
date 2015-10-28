@@ -1,0 +1,11 @@
+{
+	"compilerOptions": {
+		"target": "ES5",
+		"module": "commonjs",
+		"moduleResolution": "node",
+		"outDir": "../../jscs/bin/server"
+	},
+	"exclude": [
+		"node_modules"
+	]
+}

@@ -1,0 +1,21 @@
+{
+	"name": "jscs-server",
+	"version": "0.1.0",
+	"description": "JSCS Server",
+	"engines": {
+		"node": "*"
+	},
+	"private": true,
+	"main": "./lib/server.js",
+	"dependencies": {
+		"vscode-languageserver": "next"
+	},
+	"devDependencies": {
+		"copyfiles": "^0.2.1",
+		"typescript": "^1.6.2"
+	},
+	"scripts": {
+		"compile": "copyfiles ./package.json ../eslint/bin/server && npm install --production --prefix ../eslint/bin/server && tsc -p ./src",
+		"watch": "copyfiles ./package.json ../eslint/bin/server && npm install --production --prefix ../eslint/bin/server && tsc --watch -p ./src"
+	}
+}
