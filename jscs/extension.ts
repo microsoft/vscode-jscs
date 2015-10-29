@@ -19,6 +19,8 @@ export function activate() {
 	// We need to go one level up since an extension compile the js code into
 	// the output folder.
 	let module = path.join(__dirname, '..', 'bin', 'server', 'server.js');
+	console.log(module);
+	
 	let options = { execArgv: ["--nolazy", "--debug=6004"] };
 	let clientOptions: ClientOptions = {
 		server: {

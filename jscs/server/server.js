@@ -79,6 +79,7 @@ var validator = {
         requestor.all();
     },
     validate: function (document) {
+        console.log("in validate");
         var checker = new lib();
         checker.registerDefaultRules();
         if (settings.jscs.preset) {

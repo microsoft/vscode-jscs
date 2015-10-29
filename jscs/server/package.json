@@ -1,0 +1,21 @@
+{
+	"name": "jscs-server",
+	"version": "0.1.0",
+	"description": "JSCS Server",
+	"engines": {
+		"node": "*"
+	},
+	"private": true,
+	"main": "./lib/server.js",
+	"dependencies": {
+		"vscode-languageserver": "next"
+	},
+	"devDependencies": {
+		"copyfiles": "^0.2.1",
+		"typescript": "^1.6.2"
+	},
+	"scripts": {
+		"compile": "installServerIntoExtension ../jscs ./package.json ./src/tsconfig.json && tsc -p ./src",
+		"watch": "installServerIntoExtension ../jscs ./package.json ./src/tsconfig.json && tsc --watch -p ./src"
+	}
+}

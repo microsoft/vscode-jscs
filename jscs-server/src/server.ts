@@ -139,6 +139,8 @@ function setConfig(checker: any) {
 
 let connection: IValidatorConnection = createValidatorConnection(process.stdin, process.stdout);
 
+
+
 let validator: SingleFileValidator = {
 	initialize: (rootFolder: string): Thenable<InitializeResult | ResponseError<InitializeError>> => {
 		return Files.resolveModule(rootFolder, 'jscs').then((value): InitializeResult | ResponseError<InitializeError> => {
@@ -159,6 +161,9 @@ let validator: SingleFileValidator = {
 
 	validate: (document: ISimpleTextDocument): Diagnostic[] => {
 
+		console.log("in validate");
+
+		
 
 		let checker = new lib();
 

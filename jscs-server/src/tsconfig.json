@@ -3,7 +3,7 @@
 		"target": "ES5",
 		"module": "commonjs",
 		"moduleResolution": "node",
-		"outDir": "../../jscs/bin/server"
+		"outDir": "../../jscs/server"
 	},
 	"exclude": [
 		"node_modules"
