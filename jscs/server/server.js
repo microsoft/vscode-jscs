@@ -145,3 +145,4 @@ connection.onRequest(MyCommandRequest.type, function (params) {
     return { message: "Recevied command " + params.command };
 });
 connection.run(validator);
+//# sourceMappingURL=server.js.map

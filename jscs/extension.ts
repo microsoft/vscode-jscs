@@ -18,17 +18,17 @@ export function activate() {
 
 	// We need to go one level up since an extension compile the js code into
 	// the output folder.
-	let module = path.join(__dirname, '..', 'bin', 'server', 'server.js');
+	let module = path.join(__dirname, '..', 'server', 'server.js');
 	console.log(module);
 	
-	let options = { execArgv: ["--nolazy", "--debug=6004"] };
+	let debugOptions = { execArgv: ["--nolazy", "--debug=6004"] };
 	let clientOptions: ClientOptions = {
 		server: {
 			run: { module },
-			debug: { module, options}
+			debug: { module, options: debugOptions}
 		},
 		syncTextDocument: (textDocument) => textDocument.getLanguageId() === 'javascript',
-		configuration: 'eslint',
+		configuration: 'jscs',
 		fileWatchers: workspace.createFileSystemWatcher('**/.jscsrc')
 	}
 
