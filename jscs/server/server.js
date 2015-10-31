@@ -6,40 +6,8 @@ var vscode_languageserver_1 = require('vscode-languageserver');
 var settings = null;
 var options = null;
 var lib = null;
-function makeDiagnostic(e) {
-    // return {
-    // 	message: problem.message,
-    // 	severity: convertSeverity(problem.severity),
-    // 	start: {
-    // 		line: problem.line - 1,
-    // 		character: problem.column - 1
-    // 	}
-    // };
-    var res;
-    res = {
-        message: 'JSCS: ' + e.message,
-        // all JSCS errors are Warnings in our world
-        severity: vscode_languageserver_1.Severity.Warning,
-        // start alone will select word if in one
-        start: {
-            line: e.line,
-            character: e.column
-        },
-        code: e.rule
-    };
-    return res;
-}
-function convertSeverity(severity) {
-    switch (severity) {
-        // Eslint 1 is warning
-        case 1:
-            return vscode_languageserver_1.Severity.Warning;
-        case 2:
-            return vscode_languageserver_1.Severity.Error;
-        default:
-            return vscode_languageserver_1.Severity.Error;
-    }
-}
+var connection = vscode_languageserver_1.createConnection(process.stdin, process.stdout);
+var documents = new vscode_languageserver_1.TextDocuments();
 function setConfig(checker) {
     checker.registerDefaultRules();
     if (settings) {
@@ -64,85 +32,116 @@ function setConfig(checker) {
         });
     }
 }
-var connection = vscode_languageserver_1.createValidatorConnection(process.stdin, process.stdout);
-var validator = {
-    initialize: function (rootFolder) {
-        return vscode_languageserver_1.Files.resolveModule(rootFolder, 'jscs').then(function (value) {
-            lib = value;
-            return null;
-        }, function (error) {
-            return Promise.reject(new vscode_languageserver_1.ResponseError(99, 'Failed to load eslint library. Please install eslint in your workspace folder using \'npm install eslint\' and then press Retry.', { retry: true }));
-        });
-    },
-    onConfigurationChange: function (_settings, requestor) {
-        settings = _settings;
-        requestor.all();
-    },
-    validate: function (document) {
-        console.log("in validate");
-        var checker = new lib();
-        checker.registerDefaultRules();
-        if (settings.jscs.preset) {
-            checker.configure({
-                "preset": settings.jscs.preset
-            });
-        }
-        else if (settings.jscs.configuration) {
-            checker.configure(settings.jscs.configuration);
-        }
-        else {
-            // TODO provide some sort of warning that there is no config
-            // use jquery by default
-            checker.configure('jquery');
-        }
-        var result = [];
-        var fileContents = document.getText();
-        var results = checker.checkString(fileContents);
-        var errors = results.getErrorList();
-        if (errors.length > 0) {
-            errors.forEach(function (e) {
-                result.push(makeDiagnostic(e));
-            });
-        }
-        return result;
-        // let CLIEngine = lib.CLIEngine;
-        // try {
-        // 	var cli = new CLIEngine(options);
-        // 	let content = document.getText();
-        // 	let uri = document.uri;
-        // 	let report: ESLintReport = cli.executeOnText(content, Files.uriToFilePath(uri));
-        // 	let diagnostics: Diagnostic[] = [];
-        // 	if (report && report.results && Array.isArray(report.results) && report.results.length > 0) {
-        // 		let docReport = report.results[0];
-        // 		if (docReport.messages && Array.isArray(docReport.messages)) {
-        // 			docReport.messages.forEach((problem) => {
-        // 				if (problem) {
-        // 					diagnostics.push(makeDiagnostic(problem));
-        // 				}
-        // 			});
-        // 		}
-        // 	}
-        // 	return diagnostics;
-        // } catch (err) {
-        // 	let message: string = null;
-        // 	if (typeof err.message === 'string' || err.message instanceof String) {
-        // 		message = <string>err.message;
-        // 		message = message.replace(/\r?\n/g, ' ');
-        // 		if (/^CLI: /.test(message)) {
-        // 			message = message.substr(5);
-        // 		}
-        // 		throw new LanguageServerError(message, MessageKind.Show);
-        // 	}
-        // 	throw err;
-        // }
+function validateSingle(document) {
+    try {
+        validate(document);
     }
-};
-var MyCommandRequest;
-(function (MyCommandRequest) {
-    MyCommandRequest.type = { method: 'jscs/myCommand' };
-})(MyCommandRequest = exports.MyCommandRequest || (exports.MyCommandRequest = {}));
-connection.onRequest(MyCommandRequest.type, function (params) {
-    return { message: "Recevied command " + params.command };
+    catch (err) {
+        connection.window.showErrorMessage(getMessage(err, document));
+    }
+}
+function validateMany(documents) {
+    var tracker = new vscode_languageserver_1.ErrorMessageTracker();
+    documents.forEach(function (document) {
+        try {
+            validate(document);
+        }
+        catch (err) {
+            tracker.add(getMessage(err, document));
+        }
+    });
+    tracker.sendErrors(connection);
+}
+function validate(document) {
+    var checker = new lib();
+    var fileContents = document.getText();
+    var uri = document.uri;
+    checker.registerDefaultRules();
+    if (settings.jscs.preset) {
+        checker.configure({
+            "preset": settings.jscs.preset
+        });
+    }
+    else if (settings.jscs.configuration) {
+        checker.configure(settings.jscs.configuration);
+    }
+    else {
+        // TODO provide some sort of warning that there is no config
+        // use jquery by default
+        checker.configure('jquery');
+    }
+    var diagnostics = [];
+    var results = checker.checkString(fileContents);
+    var errors = results.getErrorList();
+    if (errors.length > 0) {
+        errors.forEach(function (e) {
+            diagnostics.push(makeDiagnostic(e));
+        });
+    }
+    return connection.sendDiagnostics({ uri: uri, diagnostics: diagnostics });
+}
+function makeDiagnostic(e) {
+    var res;
+    res = {
+        message: 'JSCS: ' + e.message,
+        // all JSCS errors are Warnings in our world
+        severity: vscode_languageserver_1.Severity.Warning,
+        // start alone will select word if in one
+        start: {
+            line: e.line - 1,
+            character: e.column
+        },
+        end: {
+            line: e.line - 1,
+            character: Number.MAX_VALUE
+        },
+        code: e.rule
+    };
+    return res;
+}
+function getMessage(err, document) {
+    var result = null;
+    if (typeof err.message === 'string' || err.message instanceof String) {
+        result = err.message;
+        result = result.replace(/\r?\n/g, ' ');
+        if (/^CLI: /.test(result)) {
+            result = result.substr(5);
+        }
+    }
+    else {
+        result = "An unknown error occured while validating file: " + vscode_languageserver_1.Files.uriToFilePath(document.uri);
+    }
+    return result;
+}
+// The documents manager listen for text document create, change
+// and close on the connection
+documents.listen(connection);
+// A text document has changed. Validate the document.
+documents.onDidChangeContent(function (event) {
+    validateSingle(event.document);
 });
-connection.run(validator);
+connection.onInitialize(function (params) {
+    var rootFolder = params.rootFolder;
+    return vscode_languageserver_1.Files.resolveModule(rootFolder, 'jscs').then(function (value) {
+        lib = value;
+        var result = { capabilities: { textDocumentSync: documents.syncKind } };
+        return result;
+    }, function (error) {
+        return Promise.reject(new vscode_languageserver_1.ResponseError(99, 'Failed to load jscs library. Please install jscs in your workspace folder using \'npm install jscs\' and then press Retry.', { retry: true }));
+    });
+});
+connection.onDidChangeConfiguration(function (params) {
+    settings = params.settings;
+    // if (settings.eslint) {
+    // 	options = settings.eslint.options || {};
+    // }
+    // Settings have changed. Revalidate all documents.
+    validateMany(documents.all());
+});
+connection.onDidChangeWatchedFiles(function (params) {
+    // A .jscsrc has change. No smartness here.
+    // Simply revalidate all file.
+    validateMany(documents.all());
+});
+connection.listen();
 //# sourceMappingURL=server.js.map

@@ -93,7 +93,7 @@ function validate(document: ITextDocument): void {
 		let checker = new lib();
 		let fileContents = document.getText();
 		let uri = document.uri;
-		
+
 		checker.registerDefaultRules();
 
 		if (settings.jscs.preset) {
@@ -132,8 +132,12 @@ function makeDiagnostic(e: JSCSError): Diagnostic {
 		severity: Severity.Warning,
 		// start alone will select word if in one
 		start: {
-			line: e.line,
+			line: e.line - 1,
 			character: e.column
+		},
+		end: {
+			line: e.line -1,
+			character: Number.MAX_VALUE
 		},
 		code: e.rule
 		// Number.MAX_VALUE will select to the end of the line
