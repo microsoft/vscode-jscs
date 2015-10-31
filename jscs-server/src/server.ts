@@ -3,10 +3,14 @@
  *--------------------------------------------------------*/
 'use strict';
 
-import { ResponseError, RequestType, IRequestHandler, NotificationType, INotificationHandler,
-IValidatorConnection, createValidatorConnection, SingleFileValidator, InitializeResult, InitializeError,
-IValidationRequestor, ISimpleTextDocument, Diagnostic, Severity, Position, Files,
-LanguageServerError, MessageKind } from 'vscode-languageserver';
+import {
+	createConnection, IConnection,
+	ResponseError, RequestType, IRequestHandler, NotificationType, INotificationHandler,
+	InitializeResult, InitializeError,
+	Diagnostic, Severity, Position, Files,
+	TextDocuments, ITextDocument, TextDocumentSyncKind,
+	ErrorMessageTracker
+} from 'vscode-languageserver';
 
 import fs = require('fs');
 import path = require('path');
@@ -21,14 +25,6 @@ interface JSCSError {
 	rule: string
 }
 
-interface Settings {
-	eslint: {
-		enable: boolean;
-		options: any;
-	}
-	[key: string]: any;
-}
-
 interface JSCSSettings {
 	jscs: {
 		enable: boolean,
@@ -37,76 +33,11 @@ interface JSCSSettings {
 	}
 }
 
-interface ESLintProblem {
-	line: number;
-	column: number;
-	severity: number;
-	ruleId: string;
-	message: string;
-}
-
-interface ESLintDocumentReport {
-	filePath: string;
-	errorCount: number;
-	warningCount: number;
-	messages: ESLintProblem[];
-}
-
-interface ESLintReport {
-	errorCount: number;
-	warningCount: number;
-	results: ESLintDocumentReport[];
-}
-
 let settings: JSCSSettings = null;
 let options: any = null;
 let lib: any = null;
-
-function makeDiagnostic(e: JSCSError): Diagnostic {
-	// return {
-	// 	message: problem.message,
-	// 	severity: convertSeverity(problem.severity),
-	// 	start: {
-	// 		line: problem.line - 1,
-	// 		character: problem.column - 1
-	// 	}
-	// };
-
-	let res: Diagnostic;
-
-	res = {
-		message: 'JSCS: ' + e.message,
-		// all JSCS errors are Warnings in our world
-		severity: Severity.Warning,
-		// start alone will select word if in one
-		start: {
-			line: e.line,
-			character: e.column
-		},
-		code: e.rule
-		// Number.MAX_VALUE will select to the end of the line
-		// , end: {
-		// 	line: e.line,
-		// 	character: Number.MAX_VALUE
-		// }
-	};
-
-	return res;
-
-}
-
-function convertSeverity(severity: number): number {
-	switch (severity) {
-		// Eslint 1 is warning
-		case 1:
-			return Severity.Warning;
-		case 2:
-			return Severity.Error;
-		default:
-			return Severity.Error;
-	}
-}
-
+let connection: IConnection = createConnection(process.stdin, process.stdout);
+let documents: TextDocuments = new TextDocuments();
 
 function setConfig(checker: any) {
 
@@ -137,36 +68,32 @@ function setConfig(checker: any) {
 
 }
 
-let connection: IValidatorConnection = createValidatorConnection(process.stdin, process.stdout);
+function validateSingle(document: ITextDocument): void {
+	try {
+		validate(document);
+	} catch (err) {
+		connection.window.showErrorMessage(getMessage(err, document));
+	}
+}
 
+function validateMany(documents: ITextDocument[]): void {
+	let tracker = new ErrorMessageTracker();
+	documents.forEach(document => {
+		try {
+			validate(document);
+		} catch (err) {
+			tracker.add(getMessage(err, document));
+		}
+	});
+	tracker.sendErrors(connection);
+}
 
-
-let validator: SingleFileValidator = {
-	initialize: (rootFolder: string): Thenable<InitializeResult | ResponseError<InitializeError>> => {
-		return Files.resolveModule(rootFolder, 'jscs').then((value): InitializeResult | ResponseError<InitializeError> => {
-			lib = value;
-			return null;
-		}, (error) => {
-			return Promise.reject(
-				new ResponseError<InitializeError>(99,
-					'Failed to load eslint library. Please install eslint in your workspace folder using \'npm install eslint\' and then press Retry.',
-					{ retry: true }));
-		});
-	},
-
-	onConfigurationChange(_settings: JSCSSettings, requestor: IValidationRequestor): void {
-		settings = _settings;
-		requestor.all();
-	},
-
-	validate: (document: ISimpleTextDocument): Diagnostic[] => {
-
-		console.log("in validate");
-
-		
+function validate(document: ITextDocument): void {
 
 		let checker = new lib();
-
+		let fileContents = document.getText();
+		let uri = document.uri;
+		
 		checker.registerDefaultRules();
 
 		if (settings.jscs.preset) {
@@ -181,67 +108,92 @@ let validator: SingleFileValidator = {
 			checker.configure('jquery');
 		}
 
-		let result: Diagnostic[] = [];
-		let fileContents = document.getText();
+		let diagnostics: Diagnostic[] = [];
 		let results = checker.checkString(fileContents);
 		let errors: JSCSError[] = results.getErrorList();
 
 		if (errors.length > 0) {
 			errors.forEach((e) => {
-				result.push(makeDiagnostic(e));
+				diagnostics.push(makeDiagnostic(e));
 			})
 		}
 
-		return result;
+	return connection.sendDiagnostics({ uri, diagnostics });
 
+}
 
-		// let CLIEngine = lib.CLIEngine;
-		// try {
-		// 	var cli = new CLIEngine(options);
-		// 	let content = document.getText();
-		// 	let uri = document.uri;
-		// 	let report: ESLintReport = cli.executeOnText(content, Files.uriToFilePath(uri));
-		// 	let diagnostics: Diagnostic[] = [];
-		// 	if (report && report.results && Array.isArray(report.results) && report.results.length > 0) {
-		// 		let docReport = report.results[0];
-		// 		if (docReport.messages && Array.isArray(docReport.messages)) {
-		// 			docReport.messages.forEach((problem) => {
-		// 				if (problem) {
-		// 					diagnostics.push(makeDiagnostic(problem));
-		// 				}
-		// 			});
-		// 		}
-		// 	}
-		// 	return diagnostics;
-		// } catch (err) {
-		// 	let message: string = null;
-		// 	if (typeof err.message === 'string' || err.message instanceof String) {
-		// 		message = <string>err.message;
-		// 		message = message.replace(/\r?\n/g, ' ');
-		// 		if (/^CLI: /.test(message)) {
-		// 			message = message.substr(5);
-		// 		}
-		// 		throw new LanguageServerError(message, MessageKind.Show);
-		// 	}
-		// 	throw err;
+function makeDiagnostic(e: JSCSError): Diagnostic {
+
+	let res: Diagnostic;
+
+	res = {
+		message: 'JSCS: ' + e.message,
+		// all JSCS errors are Warnings in our world
+		severity: Severity.Warning,
+		// start alone will select word if in one
+		start: {
+			line: e.line,
+			character: e.column
+		},
+		code: e.rule
+		// Number.MAX_VALUE will select to the end of the line
+		// , end: {
+		// 	line: e.line,
+		// 	character: Number.MAX_VALUE
 		// }
+	};
+	return res;
+}
+
+function getMessage(err: any, document: ITextDocument): string {
+	let result: string = null;
+	if (typeof err.message === 'string' || err.message instanceof String) {
+		result = <string>err.message;
+		result = result.replace(/\r?\n/g, ' ');
+		if (/^CLI: /.test(result)) {
+			result = result.substr(5);
+		}
+	} else {
+		result = `An unknown error occured while validating file: ${Files.uriToFilePath(document.uri)}`;
 	}
-};
-
-export namespace MyCommandRequest {
-	export let type: RequestType<MyCommandParams, MyCommandResult, MyCommandError> = { method: 'jscs/myCommand' };
-}
-export interface MyCommandParams {
-	command: string;
-}
-export interface MyCommandResult {
-	message: string;
-}
-export interface MyCommandError {
+	return result;
 }
 
-connection.onRequest(MyCommandRequest.type, (params) => {
-	return { message: `Recevied command ${params.command}` };
+// The documents manager listen for text document create, change
+// and close on the connection
+documents.listen(connection);
+// A text document has changed. Validate the document.
+documents.onDidChangeContent((event) => {
+	validateSingle(event.document);
 });
 
-connection.run(validator);
+connection.onInitialize((params): Thenable<InitializeResult | ResponseError<InitializeError>> => {
+	let rootFolder = params.rootFolder;
+	return Files.resolveModule(rootFolder, 'jscs').then((value): InitializeResult | ResponseError<InitializeError> => {
+		lib = value;
+		let result: InitializeResult = { capabilities: { textDocumentSync: documents.syncKind }};
+		return result;
+	}, (error) => {
+		return Promise.reject(
+			new ResponseError<InitializeError>(99,
+				'Failed to load jscs library. Please install jscs in your workspace folder using \'npm install jscs\' and then press Retry.',
+				{ retry: true }));
+	});
+});
+
+connection.onDidChangeConfiguration((params) => {
+	settings = params.settings;
+	// if (settings.eslint) {
+	// 	options = settings.eslint.options || {};
+	// }
+	// Settings have changed. Revalidate all documents.
+	validateMany(documents.all());
+});
+
+connection.onDidChangeWatchedFiles((params) => {
+	// A .jscsrc has change. No smartness here.
+	// Simply revalidate all file.
+	validateMany(documents.all());
+});
+
+connection.listen();

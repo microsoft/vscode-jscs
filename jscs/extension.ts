@@ -1,43 +1,37 @@
 import * as path from 'path';
-import { window, workspace, commands } from 'vscode'; 
-import { LanguageClient, ClientOptions, ClientStarter, RequestType } from 'vscode-languageclient';
+import { window, workspace, commands, Disposable } from 'vscode'; 
+import { LanguageClient, LanguageClientOptions, SettingMonitor, RequestType } from 'vscode-languageclient';
 
-export namespace MyCommandRequest {
-	export let type: RequestType<MyCommandParams, MyCommandResult, MyCommandError> = { method: 'jscs/myCommand' };
-}
-export interface MyCommandParams {
-	command: string;
-}
-export interface MyCommandResult {
-	message: string;
-}
-export interface MyCommandError {
-}
 
-export function activate() { 
+export function activate(subscriptions: Disposable[]) { 
 
 	// We need to go one level up since an extension compile the js code into
 	// the output folder.
-	let module = path.join(__dirname, '..', 'server', 'server.js');
-	console.log(module);
 	
+	let serverModule = path.join(__dirname, '..', 'server', 'server.js');
 	let debugOptions = { execArgv: ["--nolazy", "--debug=6004"] };
-	let clientOptions: ClientOptions = {
-		server: {
-			run: { module },
-			debug: { module, options: debugOptions}
-		},
-		syncTextDocument: (textDocument) => textDocument.getLanguageId() === 'javascript',
-		configuration: 'jscs',
-		fileWatchers: workspace.createFileSystemWatcher('**/.jscsrc')
+
+	let serverOptions = {
+		run: { module: serverModule },
+		debug: { module: serverModule, options: debugOptions}
+	};
+
+	let clientOptions: LanguageClientOptions = {
+		languageSelector: ['javascript'],
+		synchronize: {
+			configurationSection: 'jscs',
+			fileEvents: workspace.createFileSystemWatcher('**/.jscsrc')
+		}
 	}
 
-	let client = new LanguageClient('JSCS', clientOptions);
-	new ClientStarter(client).watchSetting('jscs.enable');
 
-	commands.registerCommand('extension.sayHello', () => {
-		client.sendRequest(MyCommandRequest.type, { command: "jscs-quickfix"}).then((result) => {
-			window.showInformationMessage(result.message);
-		});
-	});
+	let client = new LanguageClient('JSCS', serverOptions, clientOptions);
+	subscriptions.push(new SettingMonitor(client, 'jscs.enable').start());
+
+
+	// commands.registerCommand('extension.sayHello', () => {
+	// 	client.sendRequest(MyCommandRequest.type, { command: "jscs-quickfix"}).then((result) => {
+	// 		window.showInformationMessage(result.message);
+	// 	});
+	// });
 }
