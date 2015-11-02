@@ -4,12 +4,12 @@
 'use strict';
 
 import {
-	createConnection, IConnection,
-	ResponseError, RequestType, IRequestHandler, NotificationType, INotificationHandler,
-	InitializeResult, InitializeError,
-	Diagnostic, Severity, Position, Files,
-	TextDocuments, ITextDocument, TextDocumentSyncKind,
-	ErrorMessageTracker
+createConnection, IConnection,
+ResponseError, RequestType, IRequestHandler, NotificationType, INotificationHandler,
+InitializeResult, InitializeError,
+Diagnostic, Severity, Position, Files,
+TextDocuments, ITextDocument, TextDocumentSyncKind,
+ErrorMessageTracker
 } from 'vscode-languageserver';
 
 import fs = require('fs');
@@ -25,48 +25,50 @@ interface JSCSError {
 	rule: string
 }
 
-interface JSCSSettings {
+interface Settings {
 	jscs: {
 		enable: boolean,
 		preset: string,
-		configuration: any
+		configuration: any,
+		lintOnlyIfConfig: boolean,
+		displaySeverity: Severity
 	}
 }
 
-let settings: JSCSSettings = null;
-let options: any = null;
-let lib: any = null;
+let configCache = {
+	filePath: <string>null,
+	configuration: <any>null
+}
+
+let settings: Settings = null;
+let options: {} = null;
+let linter: any = null;
+let configLib: any = null;
 let connection: IConnection = createConnection(process.stdin, process.stdout);
 let documents: TextDocuments = new TextDocuments();
 
-function setConfig(checker: any) {
 
-	checker.registerDefaultRules();
+function getConfiguration(filePath: string): any {
 
-	if (settings) {
-
-		if (settings.jscs.enable) {
-			if (settings.jscs.enable === false) {
-				return;
-			}
-		}
-
-		if (settings.jscs.configuration) {
-			checker.configure(settings.jscs.configuration);
-		} else {
-			if (settings.jscs.preset) {
-				checker.configure({ "preset": settings.jscs.preset });
-			}
-		}
-
-	} else {
-		settings.jscs.preset = 'airbnb';
-		checker.configure({
-			"preset": settings.jscs.preset
-		});
+	if (configCache.configuration && configCache.filePath === filePath) {
+		return configCache.configuration;
 	}
 
+	configCache = {
+		filePath: filePath,
+		configuration: configLib.load(false, filePath)
+	}
+
+	return configCache.configuration;
 }
+
+function flushConfigCache() {
+	configCache = {
+		filePath: null,
+		configuration: null
+	}
+}
+
 
 function validateSingle(document: ITextDocument): void {
 	try {
@@ -90,33 +92,45 @@ function validateMany(documents: ITextDocument[]): void {
 
 function validate(document: ITextDocument): void {
 
-		let checker = new lib();
-		let fileContents = document.getText();
-		let uri = document.uri;
+	let checker = new linter();
+	let fileContents = document.getText();
+	let uri: string = document.uri;
 
-		checker.registerDefaultRules();
+	checker.registerDefaultRules();
 
-		if (settings.jscs.preset) {
-			checker.configure({
-				"preset": settings.jscs.preset
-			});
-		} else if (settings.jscs.configuration) {
-			checker.configure(settings.jscs.configuration);
-		} else {
-			// TODO provide some sort of warning that there is no config
-			// use jquery by default
-			checker.configure('jquery');
-		}
+	let config = getConfiguration(uri);
 
-		let diagnostics: Diagnostic[] = [];
-		let results = checker.checkString(fileContents);
-		let errors: JSCSError[] = results.getErrorList();
+	if (settings.jscs.configuration) {
+		options = settings.jscs.configuration;
+	} else if (settings.jscs.preset) {
+		options = {
+			"preset": settings.jscs.preset
+		};
+	} else {
+		// TODO provide some sort of warning that there is no config
+		// use jquery by default
+		options = { "preset": "jquery" };
+	}
 
-		if (errors.length > 0) {
-			errors.forEach((e) => {
-				diagnostics.push(makeDiagnostic(e));
-			})
-		}
+	checker.configure(config || options);
+
+
+	// this.jscs.configure(config || options);
+    // if (!config && this.onlyConfig) return [];
+
+
+	let diagnostics: Diagnostic[] = [];
+	let results = checker.checkString(fileContents);
+	let errors: JSCSError[] = results.getErrorList();
+
+	// test for checker.maxErrorsExceeded();
+
+	if (errors.length > 0) {
+		errors.forEach((e) => {
+			diagnostics.push(makeDiagnostic(e));
+		})
+	}
+
 
 	return connection.sendDiagnostics({ uri, diagnostics });
 
@@ -136,7 +150,7 @@ function makeDiagnostic(e: JSCSError): Diagnostic {
 			character: e.column
 		},
 		end: {
-			line: e.line -1,
+			line: e.line - 1,
 			character: Number.MAX_VALUE
 		},
 		code: e.rule
@@ -158,7 +172,7 @@ function getMessage(err: any, document: ITextDocument): string {
 			result = result.substr(5);
 		}
 	} else {
-		result = `An unknown error occured while validating file: ${Files.uriToFilePath(document.uri)}`;
+		result = `An unknown error occured while validating file: ${Files.uriToFilePath(document.uri) }`;
 	}
 	return result;
 }
@@ -173,20 +187,33 @@ documents.onDidChangeContent((event) => {
 
 connection.onInitialize((params): Thenable<InitializeResult | ResponseError<InitializeError>> => {
 	let rootFolder = params.rootFolder;
-	return Files.resolveModule(rootFolder, 'jscs').then((value): InitializeResult | ResponseError<InitializeError> => {
-		lib = value;
-		let result: InitializeResult = { capabilities: { textDocumentSync: documents.syncKind }};
-		return result;
+
+	return Files.resolveModule(rootFolder, 'jscs').then((value) => {
+		linter = value;
+		return Files.resolveModule(rootFolder, 'jscs/lib/cli-config').then((value) => {
+			configLib = value;
+
+
+			return { capabilities: { textDocumentSync: documents.syncKind } };
+		}, (error) => {
+			return Promise.reject(
+				new ResponseError<InitializeError>(99,
+					'Failed to load jscs/lib/cli-config library. Please install jscs in your workspace folder using \'npm install jscs\' and then press Retry.',
+					{ retry: true }));
+		});
 	}, (error) => {
 		return Promise.reject(
 			new ResponseError<InitializeError>(99,
 				'Failed to load jscs library. Please install jscs in your workspace folder using \'npm install jscs\' and then press Retry.',
 				{ retry: true }));
 	});
-});
+
+})
 
 connection.onDidChangeConfiguration((params) => {
+		flushConfigCache();
 	settings = params.settings;
+
 	// if (settings.eslint) {
 	// 	options = settings.eslint.options || {};
 	// }
@@ -197,6 +224,7 @@ connection.onDidChangeConfiguration((params) => {
 connection.onDidChangeWatchedFiles((params) => {
 	// A .jscsrc has change. No smartness here.
 	// Simply revalidate all file.
+    flushConfigCache();
 	validateMany(documents.all());
 });
 

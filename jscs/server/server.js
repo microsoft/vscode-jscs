@@ -3,34 +3,31 @@
  *--------------------------------------------------------*/
 'use strict';
 var vscode_languageserver_1 = require('vscode-languageserver');
+var configCache = {
+    filePath: null,
+    configuration: null
+};
 var settings = null;
 var options = null;
-var lib = null;
+var linter = null;
+var configLib = null;
 var connection = vscode_languageserver_1.createConnection(process.stdin, process.stdout);
 var documents = new vscode_languageserver_1.TextDocuments();
-function setConfig(checker) {
-    checker.registerDefaultRules();
-    if (settings) {
-        if (settings.jscs.enable) {
-            if (settings.jscs.enable === false) {
-                return;
-            }
-        }
-        if (settings.jscs.configuration) {
-            checker.configure(settings.jscs.configuration);
-        }
-        else {
-            if (settings.jscs.preset) {
-                checker.configure({ "preset": settings.jscs.preset });
-            }
-        }
+function getConfiguration(filePath) {
+    if (configCache.configuration && configCache.filePath === filePath) {
+        return configCache.configuration;
     }
-    else {
-        settings.jscs.preset = 'airbnb';
-        checker.configure({
-            "preset": settings.jscs.preset
-        });
-    }
+    configCache = {
+        filePath: filePath,
+        configuration: configLib.load(false, filePath)
+    };
+    return configCache.configuration;
+}
+function flushConfigCache() {
+    configCache = {
+        filePath: null,
+        configuration: null
+    };
 }
 function validateSingle(document) {
     try {
@@ -53,26 +50,31 @@ function validateMany(documents) {
     tracker.sendErrors(connection);
 }
 function validate(document) {
-    var checker = new lib();
+    var checker = new linter();
     var fileContents = document.getText();
     var uri = document.uri;
     checker.registerDefaultRules();
-    if (settings.jscs.preset) {
-        checker.configure({
-            "preset": settings.jscs.preset
-        });
+    var config = getConfiguration(uri);
+    if (settings.jscs.configuration) {
+        options = settings.jscs.configuration;
     }
-    else if (settings.jscs.configuration) {
-        checker.configure(settings.jscs.configuration);
+    else if (settings.jscs.preset) {
+        options = {
+            "preset": settings.jscs.preset
+        };
     }
     else {
         // TODO provide some sort of warning that there is no config
         // use jquery by default
-        checker.configure('jquery');
+        options = { "preset": "jquery" };
     }
+    checker.configure(config || options);
+    // this.jscs.configure(config || options);
+    // if (!config && this.onlyConfig) return [];
     var diagnostics = [];
     var results = checker.checkString(fileContents);
     var errors = results.getErrorList();
+    // test for checker.maxErrorsExceeded();
     if (errors.length > 0) {
         errors.forEach(function (e) {
             diagnostics.push(makeDiagnostic(e));
@@ -123,14 +125,19 @@ documents.onDidChangeContent(function (event) {
 connection.onInitialize(function (params) {
     var rootFolder = params.rootFolder;
     return vscode_languageserver_1.Files.resolveModule(rootFolder, 'jscs').then(function (value) {
-        lib = value;
-        var result = { capabilities: { textDocumentSync: documents.syncKind } };
-        return result;
+        linter = value;
+        return vscode_languageserver_1.Files.resolveModule(rootFolder, 'jscs/lib/cli-config').then(function (value) {
+            configLib = value;
+            return { capabilities: { textDocumentSync: documents.syncKind } };
+        }, function (error) {
+            return Promise.reject(new vscode_languageserver_1.ResponseError(99, 'Failed to load jscs/lib/cli-config library. Please install jscs in your workspace folder using \'npm install jscs\' and then press Retry.', { retry: true }));
+        });
     }, function (error) {
         return Promise.reject(new vscode_languageserver_1.ResponseError(99, 'Failed to load jscs library. Please install jscs in your workspace folder using \'npm install jscs\' and then press Retry.', { retry: true }));
     });
 });
 connection.onDidChangeConfiguration(function (params) {
+    flushConfigCache();
     settings = params.settings;
     // if (settings.eslint) {
     // 	options = settings.eslint.options || {};
@@ -141,6 +148,7 @@ connection.onDidChangeConfiguration(function (params) {
 connection.onDidChangeWatchedFiles(function (params) {
     // A .jscsrc has change. No smartness here.
     // Simply revalidate all file.
+    flushConfigCache();
     validateMany(documents.all());
 });
 connection.listen();
