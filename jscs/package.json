@@ -20,18 +20,30 @@
 		],
 		"configuration": {
 			"type": "object",
-			"title": "jscs configuration",
+			"title": "JSCS configuration options",
 			"properties": {
 				"jscs.enable": {
 					"type": "boolean",
 					"default": false,
 					"description": "Control whether JSCS is enabled for JavaScript files or not."
 				},
-				"jscs.options": {
+				"jscs.preset": {
+					"type": "string",
+					"default": "",
+					"description": "The JSCS preset to use. Possible values: \"airbnb\", \"crockford\", \"google\", \"grunt\", \"idiomatic\", \"jquery\", \"mdcs\", \"node-style-guide\", \"wikimedia\", \"wordpress\", \"yandex\""
+				},
+				"jscs.disableIfNoConfig": {
+					"type": "boolean",
+					"default": false,
+					"description": "Disable JSCS if no configuration file found."
+				},
+				"jscs.configuration": {
 					"type": "object",
-					"default": {},
-					"description": "The jscs options object to provide args to the jscs command."
+					"default": "",
+					"description": "A JSCS configuration object"
 				}
+
+
 			}
 		}
 	},
