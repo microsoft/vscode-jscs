@@ -1,0 +1,9 @@
+// Place your settings in this file to overwrite default and user settings.
+{
+
+    "jscs.enable": true,  
+    "jscs.preset": "jquery",
+    //"jscs.configuration": {}, 
+    "jscs.disableIfNoConfig": false,
+    "eslint.enable": true 
+}
