@@ -2,14 +2,6 @@
  * Copyright (C) Microsoft Corporation. All rights reserved.
  *--------------------------------------------------------*/
 'use strict';
-// import {
-// createConnection, IConnection,
-// ResponseError, RequestType, IRequestHandler, NotificationType, INotificationHandler,
-// InitializeResult, InitializeError,
-// Diagnostic, Severity, Position, Files,
-// TextDocuments, ITextDocument, TextDocumentSyncKind,
-// ErrorMessageTracker
-// } from 'vscode-languageserver';
 var server = require('vscode-languageserver');
 var configCache = {
     filePath: null,
