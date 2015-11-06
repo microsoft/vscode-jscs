@@ -3,8 +3,6 @@
  *--------------------------------------------------------*/
 'use strict';
 
-
-
 import * as server from 'vscode-languageserver';
 import fs = require('fs');
 import path = require('path');
@@ -21,11 +19,11 @@ interface JSCSError {
 
 interface Settings {
 	jscs: {
-		enable: boolean,
-		preset: string,
-		configuration: any,
-		lintOnlyIfConfig: boolean,
-		displaySeverity: server.Severity
+		enable: boolean;
+		preset: string;
+		configuration: any;
+		lintOnlyIfConfig: boolean;
+		displaySeverity: server.DiagnosticSeverity;
 	}
 }
 
@@ -147,15 +145,17 @@ function makeDiagnostic(e: JSCSError): server.Diagnostic {
 	res = {
 		message: 'JSCS: ' + e.message,
 		// all JSCS errors are Warnings in our world
-		severity: server.Severity.Warning,
+		severity: server.DiagnosticSeverity.Warning,
 		// start alone will select word if in one
-		start: {
-			line: e.line - 1,
-			character: e.column
-		},
-		end: {
-			line: e.line - 1,
-			character: Number.MAX_VALUE
+		range: {
+			start: {
+				line: e.line - 1,
+				character: e.column
+			},
+			end: {
+				line: e.line - 1,
+				character: Number.MAX_VALUE
+			}
 		},
 		code: e.rule
 		// Number.MAX_VALUE will select to the end of the line
@@ -188,11 +188,11 @@ documents.onDidChangeContent((event) => {
 });
 
 connection.onInitialize((params): Thenable<server.InitializeResult | server.ResponseError<server.InitializeError>> => {
-	let rootFolder = params.rootFolder;
+	let rootPath = params.rootPath;
 
-	return server.Files.resolveModule(rootFolder, 'jscs').then((value) => {
+	return server.Files.resolveModule(rootPath, 'jscs').then((value) => {
 		linter = value;
-		return server.Files.resolveModule(rootFolder, 'jscs/lib/cli-config').then((value) => {
+		return server.Files.resolveModule(rootPath, 'jscs/lib/cli-config').then((value) => {
 			configLib = value;
 
 

@@ -1,10 +1,23 @@
 {
 	"name": "jscs",
-	"description": "jscs",
-	"version": "0.0.1",
+	"description": "Extension to lint JavaScript files using jscs.",
+	"version": "0.10.0",
+	"author": "Microsoft Corporation",
+	"license": "MIT",
+	"repository": {
+		"type": "git",
+		"url": "https://github.com/Microsoft/vscode-jscs.git"
+	},
+	"bugs": {
+		"url": "https://github.com/Microsoft/vscode-jscs/issues"
+	},
 	"publisher": "vscode",
+	"categories": [
+		"Languages",
+		"Linters"
+	],	
 	"engines": {
-		"vscode": "*"
+		"vscode": "0.10.x"
 	},
 	"activationEvents": [
 		"onLanguage:javascript",
@@ -48,13 +61,13 @@
 		}
 	},
 	"scripts": {
-		"vscode:prepublish": "node ./node_modules/vscode/bin/compile",
+		"vscode:prepublish": "cd ../jscs-server && npm run compile && cd ../jscs && node ./node_modules/vscode/bin/compile",
 		"compile": "node ./node_modules/vscode/bin/compile -watch -p ./"
 	},
 	"devDependencies": {
-		"vscode": "next"
+		"vscode": "0.10.x"
 	},
 	"dependencies": {
-		"vscode-languageclient": "next"
+		"vscode-languageclient": "0.10.x"
 	}
 }

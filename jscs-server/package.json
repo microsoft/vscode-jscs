@@ -2,12 +2,21 @@
 	"name": "jscs-server",
 	"version": "0.1.0",
 	"description": "JSCS Server",
+	"author": "Microsoft Corporation",
+	"license": "MIT",
+	"repository": {
+		"type": "git",
+		"url": "https://github.com/Microsoft/vscode-jscs.git"
+	},
+	"bugs": {
+		"url": "https://github.com/Microsoft/vscode-jscs/issues"
+	},
 	"engines": {
 		"node": "*"
 	},
 	"private": true,
 	"dependencies": {
-		"vscode-languageserver": "next"
+		"vscode-languageserver": "0.10.x"
 	},
 	"devDependencies": {
 		"copyfiles": "^0.2.1",
