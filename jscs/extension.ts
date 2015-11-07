@@ -28,7 +28,7 @@ export function activate(context: ExtensionContext) {
 	
 	context.subscriptions.push(new SettingMonitor(client, 'jscs.enable').start());
 
-	// commands.registerCommand('extension.sayHello', () => {
+	// commands.registerCommand('jscs.fixFile', () => {
 	// 	client.sendRequest(MyCommandRequest.type, { command: "jscs-quickfix"}).then((result) => {
 	// 		window.showInformationMessage(result.message);
 	// 	});

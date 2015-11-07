@@ -1,9 +1,16 @@
 {
 	"name": "jscs",
-	"description": "Extension to lint JavaScript files using jscs.",
 	"version": "0.10.0",
 	"author": "Microsoft Corporation",
 	"license": "MIT",
+	"displayName": "JSCS Linting",
+	"description": "A JSCS Linter for Visual Studio Code",
+	"icon": "JSCS_icon.svg",
+	"galleryBanner": {
+		"color": "#5c2d91",
+		"theme": "dark"
+	},
+	"homepage": "https://github.com/Microsoft/vscode-jscs/blob/master/README.md",
 	"repository": {
 		"type": "git",
 		"url": "https://github.com/Microsoft/vscode-jscs.git"
@@ -21,14 +28,14 @@
 	},
 	"activationEvents": [
 		"onLanguage:javascript",
-		"command:extension.sayHello"
+		"command:jscs.fixFile"
 	],
 	"main": "./out/extension",
 	"contributes": {
 		"commands"
 			: [{
-				"command": "extension.sayHello",
-				"title": "jscs linter command"
+				"command": "jscs.fixFile",
+				"title": "JSCS Fix File"
 			}
 		],
 		"configuration": {
