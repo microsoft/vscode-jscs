@@ -35,7 +35,7 @@
 		"commands"
 			: [{
 				"command": "jscs.fixFile",
-				"title": "JSCS Fix File"
+				"title": "JSCS: Fix File"
 			}
 		],
 		"configuration": {

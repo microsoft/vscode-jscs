@@ -1,6 +1,6 @@
 # JSCS Support for Visual Studio Code
 
-[JSCS](http://jscs.info) 
+[JSCS](http://jscs.info) support for Visual Studio Code. 
 
 # Installation and Usage
 
@@ -8,10 +8,15 @@ The JSCS Linter is available in the Visual Studio Code Gallery.  To install, pre
 select `Extensions: Install Extensions` and then search for and select `JSCS Linting`.
 
 Once install, the JSCS Linter will automatically analyze your JavaScript files and return style warnings
-based on the rules you define in a `.jscsrc` file or in the Workspace Settings.
+based on the rules you define in a `.jscsrc` file or in your settings.
 
-## Settings
-You can configure how the JSCS Linter works through your custom [Settings](https://code.visualstudio.com/docs/customization/userandworkspace). The available options:
+## Configuring the JSCS Linter
+
+The best way to configure how the linter flags issues in your code is to create a `.jscsrc` file in the 
+root of your workspace. The VS Code JSCS Linter will look for this file first and if no `.jscsrc` file is found
+it will look into your custom [Settings](https://code.visualstudio.com/docs/customization/userandworkspace). 
+
+Here are the available settings options:
 
 Enable or disable the JSCS Linter for JavaScript files in this workspace.
 ``` json
