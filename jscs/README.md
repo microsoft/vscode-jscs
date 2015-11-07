@@ -7,6 +7,13 @@
 The JSCS Linter is available in the Visual Studio Code Gallery.  To install, press `F1` and
 select `Extensions: Install Extensions` and then search for and select `JSCS Linting`.
 
+Install JSCS in your workspace (or globally using the `-g` switch).
+
+``` bash
+# install locally to the workspace
+npm install jscs
+```
+
 Once install, the JSCS Linter will automatically analyze your JavaScript files and return style warnings
 based on the rules you define in a `.jscsrc` file or in your settings.
 
