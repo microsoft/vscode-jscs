@@ -2,6 +2,7 @@
 	"name": "jscs",
 	"version": "0.10.0",
 	"author": "Microsoft Corporation",
+	"publisher": "vscode",
 	"license": "MIT",
 	"displayName": "JSCS Linting",
 	"description": "A JSCS Linter for Visual Studio Code",
@@ -18,7 +19,6 @@
 	"bugs": {
 		"url": "https://github.com/Microsoft/vscode-jscs/issues"
 	},
-	"publisher": "vscode",
 	"categories": [
 		"Languages",
 		"Linters"

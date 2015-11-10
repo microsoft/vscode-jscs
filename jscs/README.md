@@ -14,7 +14,7 @@ Install JSCS in your workspace (or globally using the `-g` switch).
 npm install jscs
 ```
 
-Once install, the JSCS Linter will automatically analyze your JavaScript files and return style warnings
+Once installed, the JSCS Linter will automatically analyze your JavaScript files and return style warnings
 based on the rules you define in a `.jscsrc` file or in your settings.
 
 ## Configuring the JSCS Linter
@@ -59,7 +59,8 @@ npm install
 ## Developing the Server
 - Open VS Code on the `jscs-server` folder
 - Run `npm run compile` or `npm run watch` to build the server and copy it into the `jscs` folder
-- To debug, press F5 once the extension is loade, this will attach the debugger to the server
+- To debug, press F5 *once the extension is loaded*, this will attach the debugger to the server. 
+If you try to attach too soon you will get a timeout error from the debugger.
 
 ## Developing the Extension
 - Open VS Code on the `jscs` folder
