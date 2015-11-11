@@ -9,6 +9,9 @@ export function activate(context: ExtensionContext) {
 	// the output folder.
 	
 	let serverModule = path.join(__dirname, '..', 'server', 'server.js');
+	
+	// TIP! change --debug to --debug-brk to debug initialization code in the server
+	// F5 the extension and then F5 (Attach) the server instance
 	let debugOptions = { execArgv: ["--nolazy", "--debug=6004"] };
 
 	let serverOptions = {
