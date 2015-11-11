@@ -32,12 +32,6 @@
 	],
 	"main": "./out/extension",
 	"contributes": {
-		"commands"
-			: [{
-				"command": "jscs.fixFile",
-				"title": "JSCS: Fix File"
-			}
-		],
 		"configuration": {
 			"type": "object",
 			"title": "JSCS configuration options",
