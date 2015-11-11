@@ -2,7 +2,7 @@
 	"name": "jscs",
 	"version": "0.10.0",
 	"author": "Microsoft Corporation",
-	"publisher": "vscode",
+	"publisher": "chrisdias",
 	"license": "MIT",
 	"displayName": "JSCS Linting",
 	"description": "A JSCS Linter for Visual Studio Code",
