@@ -8,7 +8,7 @@
 	"description": "A JSCS Linter for Visual Studio Code",
 	"icon": "JSCS_icon.svg",
 	"galleryBanner": {
-		"color": "#5c2d91",
+		"color": "#37699A",
 		"theme": "dark"
 	},
 	"homepage": "https://github.com/Microsoft/vscode-jscs/blob/master/README.md",
