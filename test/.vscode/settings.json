@@ -4,6 +4,5 @@
     "jscs.enable": true,  
     "jscs.preset": "jquery",
     //"jscs.configuration": {}, 
-    "jscs.disableIfNoConfig": false,
-    "eslint.enable": true 
+    "jscs.disableIfNoConfig": false
 }

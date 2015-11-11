@@ -47,24 +47,9 @@ Set [JSCS configuration rules](http://jscs.info/rules) in your settings file dir
 
 # Development
 The JSCS Linter is a great way to learn how to create extensions for VS Code. 
-We also love enhancements and bug fixes!  Here's how to get started:
-
-``` bash
-git clone https://github.com/microsoft/vscode-jscs
-cd vscode-jscs/jscs
-npm install
-cd ../jscs-server
-npm install
-```
-## Developing the Server
-- Open VS Code on the `jscs-server` folder
-- Run `npm run compile` or `npm run watch` to build the server and copy it into the `jscs` folder
-- To debug, press F5 *once the extension is loaded*, this will attach the debugger to the server. 
-If you try to attach too soon you will get a timeout error from the debugger.
-
-## Developing the Extension
-- Open VS Code on the `jscs` folder
-- To run, press `F5` to build the app, launch the extension environment, and attach a debugger
+We also love enhancements and bug fixes!  To get started, [clone the repo](https://github.com/microsoft/vscode-jscs)
+and check out the [README.md](https://github.com/Microsoft/vscode-jscs/blob/master/README.md)
+for more details
 
 Enjoy!
 
