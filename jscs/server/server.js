@@ -111,7 +111,7 @@ function makeDiagnostic(e) {
             end: {
                 line: e.line - 1,
                 character: Number.MAX_VALUE
-            },
+            }
         },
         code: e.rule
     };
