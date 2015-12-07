@@ -37,7 +37,7 @@
 			"properties": {
 				"jscs.enable": {
 					"type": "boolean",
-					"default": false,
+					"default": true,
 					"description": "Control whether JSCS is enabled for JavaScript files or not."
 				},
 				"jscs.preset": {
