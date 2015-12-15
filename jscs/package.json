@@ -55,10 +55,14 @@
 					"default": "",
 					"description": "A JSCS configuration object"
 				}
-
-
 			}
-		}
+		},
+		"jsonValidation": [
+			{
+				"fileMatch": ".jscsrc",
+				"url": "http://json.schemastore.org/jscsrc"
+			}
+		]        
 	},
 	"scripts": {
 		"vscode:prepublish": "cd ../jscs-server && npm run compile && cd ../jscs && node ./node_modules/vscode/bin/compile",
