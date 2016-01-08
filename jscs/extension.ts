@@ -20,7 +20,7 @@ export function activate(context: ExtensionContext) {
 	};
 
 	let clientOptions: LanguageClientOptions = {
-		documentSelector: ['javascript'],
+		documentSelector: ['javascript', 'javascriptreact'],
 		synchronize: {
 			configurationSection: 'jscs',
 			fileEvents: workspace.createFileSystemWatcher('**/.jscsrc')
