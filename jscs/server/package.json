@@ -1,6 +1,6 @@
 {
 	"name": "jscs-server",
-	"version": "0.1.0",
+	"version": "0.1.2",
 	"description": "JSCS Server",
 	"author": "Microsoft Corporation",
 	"license": "MIT",
