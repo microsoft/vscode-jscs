@@ -4,5 +4,5 @@
     "jscs.enable": true,  
     "jscs.preset": "jquery",
     //"jscs.configuration": {}, 
-    "jscs.disableIfNoConfig": false
+    "jscs.disableIfNoConfig": true
 }

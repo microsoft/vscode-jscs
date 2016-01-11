@@ -22,7 +22,7 @@ interface Settings {
 		enable: boolean;
 		preset: string;
 		configuration: any;
-		lintOnlyIfConfig: boolean;
+		disableIfNoConfig: boolean;
 		displaySeverity: server.DiagnosticSeverity;
 	}
 }
@@ -93,7 +93,7 @@ function validate(document: server.ITextDocument): void {
 
 		let config = getConfiguration(fsPath);
 
-		if (!config && settings.jscs.lintOnlyIfConfig) {
+		if (!config && settings.jscs.disableIfNoConfig) {
 			return;
 		}
 

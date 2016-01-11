@@ -35,7 +35,7 @@ The JSCS preset to use, possible values: `airbnb`, `crockford`, `google`, `grunt
 "jscs.preset": string
 ```
 
-Disable the JSCS Linter if no `.jscsrc` configuration file is found.
+Disable the JSCS Linter if no `.jscsrc` configuration file is found, default is `false`.
 ``` json
 "jscs.disableIfNoConfig": boolean
 ```

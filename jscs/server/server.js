@@ -56,7 +56,7 @@ function validate(document) {
         var uri = document.uri;
         var fsPath = server.Files.uriToFilePath(uri);
         var config = getConfiguration(fsPath);
-        if (!config && settings.jscs.lintOnlyIfConfig) {
+        if (!config && settings.jscs.disableIfNoConfig) {
             return;
         }
         if (settings.jscs.configuration) {
