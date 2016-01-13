@@ -143,7 +143,7 @@ function makeDiagnostic(e: JSCSError): server.Diagnostic {
 	let res: server.Diagnostic;
 
 	res = {
-		message: 'JSCS: ' + e.message,
+		message: e.message,
 		// all JSCS errors are Warnings in our world
 		severity: server.DiagnosticSeverity.Warning,
 		// start alone will select word if in one
@@ -157,7 +157,9 @@ function makeDiagnostic(e: JSCSError): server.Diagnostic {
 				character: Number.MAX_VALUE
 			}
 		},
-		code: e.rule
+		code: e.rule,
+		source: "JSCS"
+		
 		// Number.MAX_VALUE will select to the end of the line
 		// , end: {
 		// 	line: e.line,

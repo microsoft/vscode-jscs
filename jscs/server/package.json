@@ -1,6 +1,6 @@
 {
 	"name": "jscs-server",
-	"version": "0.1.2",
+	"version": "0.1.4",
 	"description": "JSCS Server",
 	"author": "Microsoft Corporation",
 	"license": "MIT",
@@ -16,7 +16,7 @@
 	},
 	"private": true,
 	"dependencies": {
-		"vscode-languageserver": "0.10.x"
+		"vscode-languageserver": "^1.1.0"
 	},
 	"devDependencies": {
 		"copyfiles": "^0.2.1",

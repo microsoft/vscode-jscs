@@ -1,6 +1,6 @@
 {
 	"name": "jscs",
-	"version": "0.1.3",
+	"version": "0.1.4",
 	"author": "Microsoft Corporation",
 	"publisher": "ms-vscode",
 	"license": "MIT",
@@ -21,7 +21,7 @@
 	},
 	"categories": [
 		"Linters"
-	],	
+	],
 	"engines": {
 		"vscode": "0.10.x"
 	},
@@ -62,7 +62,7 @@
 				"fileMatch": ".jscsrc",
 				"url": "http://json.schemastore.org/jscsrc"
 			}
-		]        
+		]
 	},
 	"scripts": {
 		"vscode:prepublish": "cd ../jscs-server && npm run compile && cd ../jscs && node ./node_modules/vscode/bin/compile",
@@ -72,6 +72,6 @@
 		"vscode": "0.10.x"
 	},
 	"dependencies": {
-		"vscode-languageclient": "0.10.x"
+		"vscode-languageclient": "^1.1.0"
 	}
 }

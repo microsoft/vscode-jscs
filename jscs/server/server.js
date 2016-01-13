@@ -99,7 +99,7 @@ function validate(document) {
 function makeDiagnostic(e) {
     var res;
     res = {
-        message: 'JSCS: ' + e.message,
+        message: e.message,
         // all JSCS errors are Warnings in our world
         severity: server.DiagnosticSeverity.Warning,
         // start alone will select word if in one
@@ -113,7 +113,8 @@ function makeDiagnostic(e) {
                 character: Number.MAX_VALUE
             }
         },
-        code: e.rule
+        code: e.rule,
+        source: "JSCS"
     };
     return res;
 }
