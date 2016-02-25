@@ -1,9 +1,9 @@
 {
 	"name": "jscs",
-	"version": "0.1.4",
+	"version": "0.1.5",
 	"author": "Microsoft Corporation",
 	"publisher": "ms-vscode",
-	"license": "MIT",
+	"license": "SEE LICENSE IN LICENSE.md",
 	"displayName": "JSCS Linting",
 	"description": "A JSCS Linter for Visual Studio Code",
 	"icon": "JSCS_icon.svg",
@@ -26,8 +26,8 @@
 		"vscode": "0.10.x"
 	},
 	"activationEvents": [
-		"onLanguage:javascript",
-		"command:jscs.fixFile"
+		"onLanguage:javascript" //,
+		//"command:jscs.fixFile"
 	],
 	"main": "./out/extension",
 	"contributes": {
