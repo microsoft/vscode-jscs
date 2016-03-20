@@ -51,7 +51,7 @@
 				},
 				"jscs.configuration": {
 					"type": "object",
-					"default": "",
+					"default": {},
 					"description": "A JSCS configuration object"
 				}
 			}
