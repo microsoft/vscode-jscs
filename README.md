@@ -1,5 +1,3 @@
-http://vsmarketplacebadge.apphb.com/version/ms-vscode.jscs.svg
-
 # JSCS Support for Visual Studio Code
 
 [JSCS](http://jscs.info) support for Visual Studio Code. 
