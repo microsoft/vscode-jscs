@@ -1,3 +1,7 @@
+![alt text](http://vsmarketplacebadge.apphb.com/version/ms-vscode.jscs.svg "Marketplace")
+
+![alt text](http://vsmarketplacebadge.apphb.com/installs/ms-vscode.jscs.svg "Installs")
+
 # JSCS Support for Visual Studio Code
 
 [JSCS](http://jscs.info) support for Visual Studio Code. 
