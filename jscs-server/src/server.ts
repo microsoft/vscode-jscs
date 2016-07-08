@@ -47,7 +47,7 @@ function flushConfigCache() {
 	}
 }
 
-function validateSingle(document: server.ITextDocument): void {
+function validateSingle(document: server.TextDocument): void {
 	try {
 		validate(document);
 	} catch (err) {
@@ -55,7 +55,7 @@ function validateSingle(document: server.ITextDocument): void {
 	}
 }
 
-function validateMany(documents: server.ITextDocument[]): void {
+function validateMany(documents: server.TextDocument[]): void {
 	let tracker = new server.ErrorMessageTracker();
 	documents.forEach(document => {
 		try {
@@ -81,7 +81,7 @@ function getConfiguration(filePath: string): any {
 	return configCache.configuration;
 }
 
-function validate(document: server.ITextDocument): void {
+function validate(document: server.TextDocument): void {
 
 	try {
 
@@ -158,24 +158,18 @@ function makeDiagnostic(e: JSCSError): server.Diagnostic {
 			}
 		},
 		code: e.rule,
-		source: "JSCS"
-		
-		// Number.MAX_VALUE will select to the end of the line
-		// , end: {
-		// 	line: e.line,
-		// 	character: Number.MAX_VALUE
-		// }
+		source: 'JSCS'
 	};
 	return res;
 }
 
-function getMessage(err: any, document: server.ITextDocument): string {
+function getMessage(err: any, document: server.TextDocument): string {
 	let result: string = null;
 	if (typeof err.message === 'string' || err.message instanceof String) {
 		result = <string>err.message;
 		result = result.replace(/\r?\n/g, ' ');
 	} else {
-		result = `An unknown error occured while validating file: ${server.Files.uriToFilePath(document.uri) }`;
+		result = `An unknown error occured while validating file: ${server.Files.uriToFilePath(document.uri)}`;
 	}
 	return result;
 }

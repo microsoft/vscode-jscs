@@ -75,17 +75,17 @@ function validate(document) {
         // configure jscs module
         checker.registerDefaultRules();
         checker.configure(config || options);
-        var diagnostics = [];
+        var diagnostics_1 = [];
         var results = checker.checkString(fileContents);
         var errors = results.getErrorList();
         // test for checker.maxErrorsExceeded();
         if (errors.length > 0) {
             errors.forEach(function (e) {
-                diagnostics.push(makeDiagnostic(e));
+                diagnostics_1.push(makeDiagnostic(e));
             });
         }
         //return connection.sendDiagnostics({ uri, diagnostics });
-        connection.sendDiagnostics({ uri: uri, diagnostics: diagnostics });
+        connection.sendDiagnostics({ uri: uri, diagnostics: diagnostics_1 });
     }
     catch (err) {
         var message = null;
@@ -114,7 +114,7 @@ function makeDiagnostic(e) {
             }
         },
         code: e.rule,
-        source: "JSCS"
+        source: 'JSCS'
     };
     return res;
 }

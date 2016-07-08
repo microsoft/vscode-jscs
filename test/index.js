@@ -9,7 +9,6 @@ if (true)
   
 var x;    
 
-
 'use strict';
 
 function bar(x) { }; 
