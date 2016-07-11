@@ -65,7 +65,7 @@
 	},
 	"scripts": {
 		"postinstall": "node ./node_modules/vscode/bin/install",
-		"vscode:prepublish": "cd ../jscs-server && npm run compile && cd ../jscs && npm run compile",
+		"vscode:prepublish": "cd ../jscs-server && npm run compile && cd ../jscs && tsc -p ./",
 		"compile": "tsc -p ./",
 		"watch": "tsc -watch -p ./",
 		"update-vscode": "node ./node_modules/vscode/bin/install"
