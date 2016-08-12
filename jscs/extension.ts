@@ -24,7 +24,10 @@ export function activate(context: ExtensionContext) {
 		synchronize: {
 			configurationSection: 'jscs',
 			fileEvents: workspace.createFileSystemWatcher('**/.jscsrc')
-		}
+		},
+		
+		initializationOptions: 'dirk, why doesnt this get passed to the server?!?'
+
 	}
 
 	let client = new LanguageClient('JSCS', serverOptions, clientOptions);

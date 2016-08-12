@@ -186,6 +186,9 @@ documents.onDidChangeContent((event) => {
 connection.onInitialize((params): Thenable<server.InitializeResult | server.ResponseError<server.InitializeError>> => {
 	let rootPath = params.rootPath;
 
+	// why don't we get the string from the client?
+	connection.console.log(params.initializationOptions);
+
 	return server.Files.resolveModule(rootPath, 'jscs').then((value) => {
 		linter = value;
 		return server.Files.resolveModule(rootPath, 'jscs/lib/cli-config').then((value) => {
