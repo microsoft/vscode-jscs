@@ -21,6 +21,7 @@ interface Settings {
 	jscs: {
 		enable: boolean;
 		preset: string;
+		configFilePath: string;
 		configuration: any;
 		disableIfNoConfig: boolean;
 		displaySeverity: server.DiagnosticSeverity;
@@ -81,6 +82,15 @@ function getConfiguration(filePath: string): any {
 	return configCache.configuration;
 }
 
+function getConfigurationFromFile(configurationFilePath: string): any {
+	configCache = {
+		filePath: configurationFilePath,
+		configuration: configLib.load(configurationFilePath)
+	}
+
+	return configCache.configuration;
+}
+
 function validate(document: server.TextDocument): void {
 
 	try {
@@ -90,8 +100,14 @@ function validate(document: server.TextDocument): void {
 		let uri = document.uri;
 		let fsPath = server.Files.uriToFilePath(uri);
 
+		let config: any = null;
+		if (settings.jscs.configFilePath) {
+			config = getConfigurationFromFile(settings.jscs.configFilePath);
+		}
 
-		let config = getConfiguration(fsPath);
+		if (!config) {
+			config = getConfiguration(fsPath);
+		}
 
 		if (!config && settings.jscs.disableIfNoConfig) {
 			return;

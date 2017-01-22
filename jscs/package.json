@@ -1,80 +1,82 @@
 {
-    "name": "jscs",
-    "version": "0.1.7",
-    "author": "Microsoft Corporation",
-    "publisher": "ms-vscode",
-    "license": "SEE LICENSE IN LICENSE.md",
-    "displayName": "JSCS Linting",
-    "description": "A JSCS Linter for Visual Studio Code",
-    "icon": "JSCS_icon.svg",
-    "galleryBanner": {
-        "color": "#37699A",
-        "theme": "dark"
-    },
-    "homepage": "https://github.com/Microsoft/vscode-jscs/blob/master/README.md",
-    "repository": {
-        "type": "git",
-        "url": "https://github.com/Microsoft/vscode-jscs.git"
-    },
-    "bugs": {
-        "url": "https://github.com/Microsoft/vscode-jscs/issues"
-    },
-    "categories": [
-        "Linters"
-    ],
-    "engines": {
-        "vscode": "^0.10.7"
-    },
-    "activationEvents": [
-        "onLanguage:javascript"
-    ],
-    "main": "./out/extension",
-    "contributes": {
-        "configuration": {
-            "type": "object",
-            "title": "JSCS configuration options",
-            "properties": {
-                "jscs.enable": {
-                    "type": "boolean",
-                    "default": true,
-                    "description": "Control whether JSCS is enabled for JavaScript files or not."
-                },
-                "jscs.preset": {
-                    "type": "string",
-                    "default": "",
-                    "description": "The JSCS preset to use. Possible values: \"airbnb\", \"crockford\", \"google\", \"grunt\", \"idiomatic\", \"jquery\", \"mdcs\", \"node-style-guide\", \"wikimedia\", \"wordpress\", \"yandex\""
-                },
-                "jscs.disableIfNoConfig": {
-                    "type": "boolean",
-                    "default": false,
-                    "description": "Disable JSCS if no configuration file found."
-                },
-                "jscs.configuration": {
-                    "type": "object",
-                    "default": {},
-                    "description": "A JSCS configuration object"
-                }
-            }
+  "name": "jscs",
+  "version": "0.1.7",
+  "author": "Microsoft Corporation",
+  "publisher": "ms-vscode",
+  "license": "SEE LICENSE IN LICENSE.md",
+  "displayName": "JSCS Linting",
+  "description": "A JSCS Linter for Visual Studio Code",
+  "icon": "JSCS_icon.svg",
+  "galleryBanner": {
+    "color": "#37699A",
+    "theme": "dark"
+  },
+  "homepage": "https://github.com/Microsoft/vscode-jscs/blob/master/README.md",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/Microsoft/vscode-jscs.git"
+  },
+  "bugs": {
+    "url": "https://github.com/Microsoft/vscode-jscs/issues"
+  },
+  "categories": [
+    "Linters"
+  ],
+  "engines": {
+    "vscode": "^0.10.7"
+  },
+  "activationEvents": [
+    "onLanguage:javascript"
+  ],
+  "main": "./out/extension",
+  "contributes": {
+    "configuration": {
+      "type": "object",
+      "title": "JSCS configuration options",
+      "properties": {
+        "jscs.enable": {
+          "type": "boolean",
+          "default": true,
+          "description": "Control whether JSCS is enabled for JavaScript files or not."
         },
-        "jsonValidation": [
-            {
-                "fileMatch": ".jscsrc",
-                "url": "http://json.schemastore.org/jscsrc"
-            }
-        ]
+        "jscs.preset": {
+          "type": "string",
+          "default": "",
+          "description": "The JSCS preset to use. Possible values: \"airbnb\", \"crockford\", \"google\", \"grunt\", \"idiomatic\", \"jquery\", \"mdcs\", \"node-style-guide\", \"wikimedia\", \"wordpress\", \"yandex\""
+        },
+        "jscs.disableIfNoConfig": {
+          "type": "boolean",
+          "default": false,
+          "description": "Disable JSCS if no configuration file found."
+        },
+        "jscs.configurationFilePath": {
+          "type": "string",
+          "default": "",
+          "description": "A file path to JSCS configuration file (i.e. a package.json with a \"jscsConfig\" entry, a .jscsrc file or a .jscs.json file)."
+        },
+        "jscs.configuration": {
+          "type": "object",
+          "default": {},
+          "description": "A JSCS configuration object"
+        }
+      }
     },
-    "scripts": {
-        "postinstall": "node ./node_modules/vscode/bin/install",
-        "vscode:prepublish": "cd ../jscs-server && npm run compile && cd ../jscs && tsc -p ./",
-        "compile": "tsc -p ./",
-        "watch": "tsc -watch -p ./",
-        "update-vscode": "node ./node_modules/vscode/bin/install"
-    },
-    "devDependencies": {
-        "vscode": "^0.11.x",
-        "typescript": "^1.8.2"
-    },
-    "dependencies": {
-        "vscode-languageclient": "^2.0.0"
-    }
+    "jsonValidation": [
+      {
+        "fileMatch": ".jscsrc",
+        "url": "http://json.schemastore.org/jscsrc"
+      }
+    ]
+  },
+  "scripts": {
+    "postinstall": "node ./node_modules/vscode/bin/install",
+    "vscode:prepublish": "cd ../jscs-server && npm run compile && cd ../jscs && tsc -p ./",
+    "compile": "tsc -p ./",
+    "watch": "tsc -watch -p ./",
+    "update-vscode": "node ./node_modules/vscode/bin/install"
+  },
+  "devDependencies": {
+    "vscode-languageclient": "^2.6.0",
+    "vscode": "^0.11.x"
+  }
 }

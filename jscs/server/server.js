@@ -49,13 +49,26 @@ function getConfiguration(filePath) {
     };
     return configCache.configuration;
 }
+function getConfigurationFromFile(configurationFilePath) {
+    configCache = {
+        filePath: configurationFilePath,
+        configuration: configLib.load(configurationFilePath)
+    };
+    return configCache.configuration;
+}
 function validate(document) {
     try {
         var checker = new linter();
         var fileContents = document.getText();
         var uri = document.uri;
         var fsPath = server.Files.uriToFilePath(uri);
-        var config = getConfiguration(fsPath);
+        var config = null;
+        if (settings.jscs.configFilePath) {
+            config = getConfigurationFromFile(settings.jscs.configFilePath);
+        }
+        if (!config) {
+            config = getConfiguration(fsPath);
+        }
         if (!config && settings.jscs.disableIfNoConfig) {
             return;
         }
@@ -101,7 +114,7 @@ function makeDiagnostic(e) {
     res = {
         message: e.message,
         // all JSCS errors are Warnings in our world
-        severity: server.DiagnosticSeverity.Warning,
+        severity: 2 /* Warning */,
         // start alone will select word if in one
         range: {
             start: {

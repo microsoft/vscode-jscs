@@ -35,7 +35,7 @@ Enable or disable the JSCS Linter for JavaScript files in this workspace.
 ```
 
 The JSCS preset to use, possible values: `airbnb`, `crockford`, `google`, `grunt`, `idiomatic`, `jquery`, `mdcs`, `node-style-guide`, `wikimedia`, `wordpress`, `yandex`.
-``` json				
+``` json
 "jscs.preset": string
 ```
 
@@ -44,9 +44,14 @@ Disable the JSCS Linter if no `.jscsrc` configuration file is found, default is 
 "jscs.disableIfNoConfig": boolean
 ```
 
-Set [JSCS configuration rules](http://jscs.info/rules) in your settings file directly.
+Set [JSCS configuration rules](http://jscs.info/rules) in your settings file directly (overridden by a configuration file if one is found).
 ``` json
 "jscs.configuration": object
+```
+
+Set a file path to your [JSCS configuration rules](http://jscs.info/rules) file in your settings.
+``` json
+"jscs.configFilePath": string
 ```
 
 # Development
