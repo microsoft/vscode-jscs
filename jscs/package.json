@@ -6,7 +6,7 @@
     "license": "SEE LICENSE IN LICENSE.md",
     "displayName": "JSCS Linting",
     "description": "A JSCS Linter for Visual Studio Code",
-    "icon": "JSCS_icon.svg",
+    "icon": "JSCS_icon.png",
     "galleryBanner": {
         "color": "#37699A",
         "theme": "dark"
@@ -23,7 +23,7 @@
         "Linters"
     ],
     "engines": {
-        "vscode": "^0.10.7"
+        "vscode": "^1.23.0"
     },
     "activationEvents": [
         "onLanguage:javascript"
@@ -71,10 +71,11 @@
         "update-vscode": "node ./node_modules/vscode/bin/install"
     },
     "devDependencies": {
-        "vscode": "^0.11.x",
-        "typescript": "^1.8.2"
+        "vscode": "^1.1.18",
+        "typescript": "^2.9.1",
+        "@types/node": "10.3.2"
     },
     "dependencies": {
-        "vscode-languageclient": "^2.0.0"
+        "vscode-languageclient": "^4.2.1"
     }
 }
