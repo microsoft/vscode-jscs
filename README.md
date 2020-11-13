@@ -4,7 +4,11 @@
 
 # JSCS Support for Visual Studio Code
 
-[JSCS](http://jscs.info) support for Visual Studio Code. 
+[JSCS](https://jscs-dev.github.io) support for Visual Studio Code. 
+
+> **❗IMPORTANT**: JSCS [is deprecated and has merged with ESLint](https://medium.com/@markelog/jscs-end-of-the-line-bc9bf0b3fdb2).
+> 
+> Please migrate your projects to ESLint and use the VS Code [ESLint extension](https://marketplace.visualstudio.com/items?itemName=dbaeumer.vscode-eslint).
 
 # Installation and Usage
 
