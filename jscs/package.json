@@ -1,6 +1,6 @@
 {
     "name": "jscs",
-    "version": "0.1.10",
+    "version": "0.1.11",
     "author": "Microsoft Corporation",
     "publisher": "ms-vscode",
     "license": "SEE LICENSE IN LICENSE.md",
@@ -71,8 +71,8 @@
         "update-vscode": "node ./node_modules/vscode/bin/install"
     },
     "devDependencies": {
-        "vscode": "^0.11.x",
-        "typescript": "^1.8.2"
+        "typescript": "^4.0.5",
+        "vscode": "^0.11.x"
     },
     "dependencies": {
         "vscode-languageclient": "^2.0.0"
