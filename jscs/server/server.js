@@ -101,7 +101,7 @@ function makeDiagnostic(e) {
     res = {
         message: e.message,
         // all JSCS errors are Warnings in our world
-        severity: server.DiagnosticSeverity.Warning,
+        severity: 2 /* Warning */,
         // start alone will select word if in one
         range: {
             start: {

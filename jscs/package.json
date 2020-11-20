@@ -1,10 +1,10 @@
 {
     "name": "jscs",
-    "version": "0.1.7",
+    "version": "0.1.8",
     "author": "Microsoft Corporation",
     "publisher": "ms-vscode",
     "license": "SEE LICENSE IN LICENSE.md",
-    "displayName": "JSCS Linting",
+    "displayName": "JSCS Linting (deprecated)",
     "description": "A JSCS Linter for Visual Studio Code",
     "icon": "JSCS_icon.svg",
     "galleryBanner": {
